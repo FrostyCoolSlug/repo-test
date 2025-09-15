@@ -1,0 +1,6 @@
+[beacn-on-linux]
+name=Beacn on Linux
+baseurl=https://frostycoolslug.github.io/repo-test/rpm
+enabed=1
+gpgcheck=1
+gpgkey=https://frostycoolslug.github.io/repo-test/public.gpg

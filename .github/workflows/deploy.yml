@@ -1,0 +1,94 @@
+name: Deploy Package Repos
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+jobs:
+  build-package-repos:
+    runs-on: ubuntu-latest
+    steps:
+      #Checkout repository
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      # ownload latest release artifacts ..
+      - name: Download latest release artifacts
+        run: |
+          mkdir -p artifacts/deb artifacts/rpm artifacts/flatpak
+          TAG=$(gh release view --repo frostycoolslug/beacn-utility --json tagName -q .tagName)
+          echo "Latest release: $TAG"
+          gh release download "$TAG" --repo frostycoolslug/beacn-utility --pattern "*.deb" --dir artifacts/deb
+          gh release download "$TAG" --repo frostycoolslug/beacn-utility --pattern "*.rpm" --dir artifacts/rpm
+          gh release download "$TAG" --repo frostycoolslug/beacn-utility --pattern "*.flatpak" --dir artifacts/flatpak
+
+      # nstall packaging and signing tools
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y dpkg-dev rpm createrepo gnupg flatpak software-properties-common
+
+      # mport GPG 
+      - name: Import GPG key
+        env:
+          GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
+        run: |
+          echo "$GPG_PRIVATE_KEY" | gpg --batch --import
+
+      # uild and sign Debian repo
+      - name: Build Debian repo
+        run: |
+          mkdir -p repo/deb/binary
+          cp artifacts/deb/*.deb repo/deb/binary/
+
+          cd repo/deb
+          dpkg-scanpackages binary /dev/null > binary/Packages
+          gzip -c binary/Packages > binary/Packages.gz
+
+          # Sign Packages
+          gpg --batch --yes -u "Beacn on Linux" --detach-sign -o binary/Packages.gz.gpg binary/Packages.gz
+
+          # Create and sign Release files
+          echo "Suite: stable" >> Release
+          echo "Codename: stable" >> Release
+          echo "Architectures: amd64" >> Release
+          echo "Components: main" >> Release
+          echo "Description: The Beacn on Linux APT repository" >> Release
+
+          gpg --batch --yes -u "Beacn on Linux" --detach-sign -o Release.gpg Release
+          gpg --batch --yes -u "Beacn on Linux" -abs -o InRelease Release
+
+      # uild and sign RPM repo
+      - name: Build RPM repo
+        run: |
+          mkdir -p repo/rpm
+          cp artifacts/rpm/*.rpm repo/rpm/
+
+          # Sign RPMs
+          for pkg in repo/rpm/*.rpm; do
+            rpm --addsign "$pkg"
+          done
+
+          # Generate metadata
+          createrepo repo/rpm
+
+      # uild and sign Flatpak repo
+      - name: Build Flatpak repo
+        run: |
+          mkdir -p repo/flatpak
+          flatpak build-import-repo repo/flatpak artifacts/flatpak/*.flatpak
+          flatpak build-sign-repo --gpg-homedir ~/.gnupg --gpg-sign "Beacn on Linux" repo/flatpak
+
+      # pload all repository files (including static scripts & public.gpg)
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: ./repo
+
+      # eploy to GitHub Pages
+      - name: Deploy to GitHub Pages
+        uses: actions/deploy-pages@v4
