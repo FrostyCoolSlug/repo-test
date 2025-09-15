@@ -82,18 +82,14 @@ jobs:
         run: |
           mkdir -p repo/flatpak
           ostree init --mode=archive --repo=repo/flatpak
-          
-          # echo "[core]" > repo/flatpak/config
-          # echo "repo_version=1" >> repo/flatpak/config
-          # echo "mode=archive-z2" >> repo/flatpak/config
-          # echo "checksum_type=sha256" >> repo/flatpak/config
+          ostree remote add beacn-on-linux repo/flatpak
           
           for bundle in artifacts/flatpak/*.flatpak; do
             [ -e "$bundle" ] || continue
-            flatpak build-import-bundle repo/flatpak "$bundle" --gpg-sign="Your Name"
+            flatpak build-import-bundle repo/flatpak "$bundle" --gpg-sign="Beacn on Linux"
           done
           
-          flatpak build-update-repo repo/flatpak --gpg-sign="Your Name" --prune
+          flatpak build-update-repo repo/flatpak --gpg-sign="Beacn on Linux" --prune
 
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
