@@ -42,17 +42,19 @@ jobs:
 
       - name: Build Debian repo
         run: |
-          BINARY_DIR="repo/deb/dists/stable/main/binary-amd64"
-          RELEASE_DIR="repo/deb/dists/stable"
+          BINARY_DIR="dists/stable/main/binary-amd64"
+          RELEASE_DIR="dists/stable"
           
-          mkdir -p "${BINARY_DIR}"
-          cp artifacts/deb/*.deb "${BINARY_DIR}/"
+
+          mkdir -p "repo/deb/${BINARY_DIR}"
+          cp artifacts/deb/*.deb "repo/deb/${BINARY_DIR}/"
+
+          # Enter the Repo directory
+          cd "repo/deb"
 
           # Generate Packages index
-          cd "${BINARY_DIR}"
-          dpkg-scanpackages . /dev/null > Packages
+          dpkg-scanpackages "${BINARY_DIR}" /dev/null > "${BINARY_DIR}/Packages"
           gzip -c Packages > Packages.gz
-          cd -
 
           # Create Release file at dists/stable/
           RELEASE_FILE="${RELEASE_DIR}/Release"
