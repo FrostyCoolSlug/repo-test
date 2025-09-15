@@ -16,6 +16,9 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Download latest release artifacts
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
         run: |
           mkdir -p artifacts/deb artifacts/rpm artifacts/flatpak
           TAG=$(gh release view --repo frostycoolslug/beacn-utility --json tagName -q .tagName)
