@@ -81,6 +81,12 @@ jobs:
       - name: Build Flatpak repo
         run: |
           mkdir -p repo/flatpak
+          ostree init --mode=archive-z2 --repo=repo/flatpak
+          
+          echo "[core]" > repo/flatpak/config
+          echo "repo_version=1" >> repo/flatpak/config
+          echo "mode=archive-z2" >> repo/flatpak/config
+          echo "checksum_type=sha256" >> repo/flatpak/config
           
           for bundle in artifacts/flatpak/*.flatpak; do
             [ -e "$bundle" ] || continue
