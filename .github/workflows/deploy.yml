@@ -42,35 +42,40 @@ jobs:
 
       - name: Build Debian repo
         run: |
-          mkdir -p repo/deb/binary
-          cp artifacts/deb/*.deb repo/deb/binary/
-
-          cd repo/deb/binary
-          dpkg-scanpackages . /dev/null > Packages
-          gzip -c Packages > Packages.gz
-
-          # Create and sign Release files
-          echo "Suite: stable" >> Release
-          echo "Codename: stable" >> Release
-          echo "Architectures: amd64" >> Release
-          echo "Components: main" >> Release
-          echo "Description: The Beacn on Linux APT repository" >> Release
+          BINARY_DIR="repo/deb/dists/stable/main/binary-amd64"
+          RELEASE_DIR="repo/deb/dists/stable"
           
-          echo "Date: $(date -Ru)" >> Release
+          mkdir -p "${BINARY_DIR}"
+          cp artifacts/deb/*.deb "${BINARY_DIR}/"
+
+          # Generate Packages index
+          dpkg-scanpackages "${BINARY_DIR}" /dev/null > "${BINARY_DIR}/Packages"
+          gzip -c "${BINARY_DIR}/Packages" > "${BINARY_DIR}/Packages.gz"
+
+          # Create Release file at dists/stable/
+          RELEASE_FILE="${RELEASE_DIR}/Release"
           
-          # Add checksums
-          echo "SHA256:" >> Release
-          for file in Packages Packages.gz; do
+          echo "Suite: stable" > "$RELEASE_FILE"
+          echo "Codename: stable" >> "$RELEASE_FILE"
+          echo "Architectures: amd64" >> "$RELEASE_FILE"
+          echo "Components: main" >> "$RELEASE_FILE"
+          echo "Description: The Beacn on Linux APT repository" >> "$RELEASE_FILE"
+          echo "Date: $(date -Ru)" >> "$RELEASE_FILE"
+          echo "SHA256:" >> "$RELEASE_FILE"
+
+          for file in "${BINARY_DIR}/Packages" "${BINARY_DIR}/Packages.gz"; do
             if [ -f "$file" ]; then
               SIZE=$(stat -c%s "$file")
               HASH=$(sha256sum "$file" | cut -d' ' -f1)
-              echo " $HASH $SIZE $file" >> Release
+              REL_PATH="${file#${RELEASE_DIR}/}"
+              echo " $HASH $SIZE ${REL_PATH}" >> "$RELEASE_FILE"
             fi
           done
-
-          gpg --batch --yes -u "Beacn on Linux" --detach-sign -o Packages.gz.gpg Packages.gz
-          gpg --batch --yes -u "Beacn on Linux" --detach-sign -o Release.gpg Release
-          gpg --batch --yes -u "Beacn on Linux" --clearsign -o InRelease Release
+          
+          # Sign Packages and Release files
+          gpg --batch --yes -u "Beacn on Linux" --detach-sign -o "${BINARY_DIR}/Packages.gz.gpg" "${BINARY_DIR}/Packages.gz"
+          gpg --batch --yes -u "Beacn on Linux" --detach-sign -o "${RELEASE_FILE}.gpg" "${RELEASE_FILE}"
+          gpg --batch --yes -u "Beacn on Linux" --clearsign -o "${RELEASE_DIR}/InRelease" "${RELEASE_FILE}"
 
       - name: Build RPM repo
         run: |
