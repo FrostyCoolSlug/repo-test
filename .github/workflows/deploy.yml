@@ -12,11 +12,9 @@ jobs:
   build-package-repos:
     runs-on: ubuntu-latest
     steps:
-      #Checkout repository
       - name: Checkout repo
         uses: actions/checkout@v4
 
-      # ownload latest release artifacts ..
       - name: Download latest release artifacts
         run: |
           mkdir -p artifacts/deb artifacts/rpm artifacts/flatpak
@@ -26,20 +24,17 @@ jobs:
           gh release download "$TAG" --repo frostycoolslug/beacn-utility --pattern "*.rpm" --dir artifacts/rpm
           gh release download "$TAG" --repo frostycoolslug/beacn-utility --pattern "*.flatpak" --dir artifacts/flatpak
 
-      # nstall packaging and signing tools
       - name: Install dependencies
         run: |
           sudo apt-get update
           sudo apt-get install -y dpkg-dev rpm createrepo gnupg flatpak software-properties-common
 
-      # mport GPG 
       - name: Import GPG key
         env:
           GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
         run: |
           echo "$GPG_PRIVATE_KEY" | gpg --batch --import
 
-      # uild and sign Debian repo
       - name: Build Debian repo
         run: |
           mkdir -p repo/deb/binary
@@ -76,14 +71,12 @@ jobs:
           # Generate metadata
           createrepo repo/rpm
 
-      # uild and sign Flatpak repo
       - name: Build Flatpak repo
         run: |
           mkdir -p repo/flatpak
           flatpak build-import-repo repo/flatpak artifacts/flatpak/*.flatpak
           flatpak build-sign-repo --gpg-homedir ~/.gnupg --gpg-sign "Beacn on Linux" repo/flatpak
 
-      # pload all repository files (including static scripts & public.gpg)
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
         with:
