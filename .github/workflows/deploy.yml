@@ -63,6 +63,8 @@ jobs:
       # uild and sign RPM repo
       - name: Build RPM repo
         run: |
+          echo "%_gpg_name Beacn on Linux" > ~/.rpmmacros
+          
           mkdir -p repo/rpm
           cp artifacts/rpm/*.rpm repo/rpm/
 
