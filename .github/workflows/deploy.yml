@@ -50,7 +50,7 @@ jobs:
 
           # Generate Packages index
           cd "${BINARY_DIR}"
-          dpkg-scanpackages "${BINARY_DIR}" /dev/null > "${BINARY_DIR}/Packages"
+          dpkg-scanpackages . /dev/null > Packages
           gzip -c Packages > Packages.gz
           cd -
 
