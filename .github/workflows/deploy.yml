@@ -82,7 +82,6 @@ jobs:
         run: |
           mkdir -p repo/flatpak
           ostree init --mode=archive --repo=repo/flatpak
-          ostree remote --repo=repo/flatpak add beacn-on-linux file://$(pwd)/repo/flatpak
           
           for bundle in artifacts/flatpak/*.flatpak; do
             [ -e "$bundle" ] || continue
