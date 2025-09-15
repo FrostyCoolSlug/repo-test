@@ -5,7 +5,7 @@ USER="frostycoolslug"
 REPOSITORY="repo-test"
 
 # Detect OSTree immutable system
-if [ -f /etc/ostree-release ]; then
+if [ -f /run/ostree-booted ]; then
     echo "Immutable OSTree-based system detected. Use the Flatpak version:"
     echo "  https://${USER}.github.io/${REPOSITORY}/scripts/install-flatpak.sh"
     exit 1
