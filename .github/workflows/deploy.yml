@@ -81,8 +81,8 @@ jobs:
       - name: Build Flatpak repo
         run: |
           mkdir -p repo/flatpak
-          flatpak build-import-repo repo/flatpak artifacts/flatpak/*.flatpak
-          flatpak build-sign-repo --gpg-homedir ~/.gnupg --gpg-sign "Beacn on Linux" repo/flatpak
+          flatpak build-update-repo repo/flatpak --gpg-sign="Beacn on Linux" --prune
+          flatpak build-update-repo --repo=repo/flatpak artifacts/flatpak/*.flatpak --gpg-sign="Your Name"
 
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
