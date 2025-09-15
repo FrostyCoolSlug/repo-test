@@ -32,7 +32,7 @@ jobs:
           sudo add-apt-repository -y ppa:flatpak/stable
           
           sudo apt-get update
-          sudo apt-get install -y dpkg-dev rpm createrepo-c gnupg flatpak software-properties-common
+          sudo apt-get install -y dpkg-dev rpm createrepo-c gnupg flatpak software-properties-common ostree
 
       - name: Import GPG key
         env:
@@ -81,12 +81,12 @@ jobs:
       - name: Build Flatpak repo
         run: |
           mkdir -p repo/flatpak
-          ostree init --mode=archive-z2 --repo=repo/flatpak
+          ostree init --mode=archive --repo=repo/flatpak
           
-          echo "[core]" > repo/flatpak/config
-          echo "repo_version=1" >> repo/flatpak/config
-          echo "mode=archive-z2" >> repo/flatpak/config
-          echo "checksum_type=sha256" >> repo/flatpak/config
+          # echo "[core]" > repo/flatpak/config
+          # echo "repo_version=1" >> repo/flatpak/config
+          # echo "mode=archive-z2" >> repo/flatpak/config
+          # echo "checksum_type=sha256" >> repo/flatpak/config
           
           for bundle in artifacts/flatpak/*.flatpak; do
             [ -e "$bundle" ] || continue
