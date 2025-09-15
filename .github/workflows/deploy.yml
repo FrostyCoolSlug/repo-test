@@ -60,7 +60,7 @@ jobs:
           echo "Description: The Beacn on Linux APT repository" >> Release
 
           gpg --batch --yes -u "Beacn on Linux" --detach-sign -o Release.gpg Release
-          gpg --batch --yes -u "Beacn on Linux" -abs -o InRelease Release
+          gpg --batch --yes -u "Beacn on Linux" --clearsign -o InRelease Release
 
       # uild and sign RPM repo
       - name: Build RPM repo
