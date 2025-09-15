@@ -60,8 +60,7 @@ jobs:
           echo "Description: The Beacn on Linux APT repository" >> Release
           
           echo "Date: $(date -Ru)" >> Release
-    
-          # Add checksums
+
           echo "SHA256:" >> Release
           find . -name "Packages*" -exec sha256sum {} \; | sed 's|\./| |' >> Release
 
