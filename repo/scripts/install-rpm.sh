@@ -20,7 +20,9 @@ echo ""
 
 # Import GPG key for verification
 echo "Installing security key"
-curl -fsSL "$GPG_KEY_URL" | gpg --dearmor | sudo tee /usr/share/keyrings/beacn-on-linux.gpg >/dev/null
+TMP_KEY="$(mktemp)"
+curl -fsSL "${GPG_KEY_URL}" -o "${TMP_KEY}"
+sudo rpm --import "$TMP_KEY"
 
 # Install RPM repo file
 echo "Configuring repository"
