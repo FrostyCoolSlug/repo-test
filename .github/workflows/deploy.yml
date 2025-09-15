@@ -49,8 +49,10 @@ jobs:
           cp artifacts/deb/*.deb "${BINARY_DIR}/"
 
           # Generate Packages index
+          cd "${BINARY_DIR}"
           dpkg-scanpackages "${BINARY_DIR}" /dev/null > "${BINARY_DIR}/Packages"
-          gzip -c "${BINARY_DIR}/Packages" > "${BINARY_DIR}/Packages.gz"
+          gzip -c Packages > Packages.gz
+          cd -
 
           # Create Release file at dists/stable/
           RELEASE_FILE="${RELEASE_DIR}/Release"
