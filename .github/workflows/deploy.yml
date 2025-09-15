@@ -82,7 +82,12 @@ jobs:
         run: |
           mkdir -p repo/flatpak
           flatpak build-update-repo repo/flatpak --gpg-sign="Your Name" --prune
-          flatpak build-import-bundle --gpg-sign="Beacn on Linux" repo/flatpak artifacts/flatpak/*.flatpak
+
+          # Import all bundles safely
+          for bundle in artifacts/flatpak/*.flatpak; do
+            [ -e "$bundle" ] || continue
+            flatpak build-import-bundle repo/flatpak "$bundle" --gpg-sign="Your Name"
+          done
 
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
