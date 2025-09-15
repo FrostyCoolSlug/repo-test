@@ -30,7 +30,7 @@ jobs:
       - name: Install dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y dpkg-dev rpm createrepo gnupg flatpak software-properties-common
+          sudo apt-get install -y dpkg-dev rpm createrepo-c gnupg flatpak software-properties-common
 
       - name: Import GPG key
         env:
@@ -72,7 +72,7 @@ jobs:
           done
 
           # Generate metadata
-          createrepo repo/rpm
+          createrepo_c repo/rpm
 
       - name: Build Flatpak repo
         run: |
