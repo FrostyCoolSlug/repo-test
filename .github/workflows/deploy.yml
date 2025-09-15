@@ -54,7 +54,7 @@ jobs:
 
           # Generate Packages index
           dpkg-scanpackages "${BINARY_DIR}" /dev/null > "${BINARY_DIR}/Packages"
-          gzip -c Packages > Packages.gz
+          gzip -c "${BINARY_DIR}/Packages" > "${BINARY_DIR}/Packages.gz"
 
           # Create Release file at dists/stable/
           RELEASE_FILE="${RELEASE_DIR}/Release"
