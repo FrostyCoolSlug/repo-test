@@ -5,7 +5,7 @@ USER="frostycoolslug"
 REPOSITORY="repo-test"
 
 GPG_KEY_URL="https://${USER}.github.io/${REPOSITORY}/public.gpg"
-FLATPAK_REPO_URL="https://${USER}.github.io/${REPOSITORY}/beacn-on-linux.flatpakrepo"
+FLATPAK_REPO_URL="https://${USER}.github.io/${REPOSITORY}/flatpak"
 
 echo "Downloading public GPG key..."
 TMP_KEY="$(mktemp)"

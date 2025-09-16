@@ -1,8 +1,0 @@
-[Flatpak Repo]
-Title=Beacn on Linux
-Url=https://frostycoolslug.github.io/repo-test/flatpak
-Homepage=https://github.com/frostycoolslug/repo-test
-Comment=Beacn on Linux Repository
-Description=Repository for Beacn on Linux
-RuntimeRepo=https://flathub.org/repo/flathub.flatpakrepo
-DefaultBranch=stable
