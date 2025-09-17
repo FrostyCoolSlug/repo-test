@@ -20,4 +20,7 @@ echo "Configuring repository"
 sudo curl -fsSL "$APT_REPO_LIST_URL" -o /etc/apt/sources.list.d/beacn-on-linux.list
 sudo apt-get update
 
-echo "Debian repository added. You can now install packages with apt."
+echo "Installing Beacn Utility"
+sudo apt-get install beacn-utility
+
+echo "Installation Complete"

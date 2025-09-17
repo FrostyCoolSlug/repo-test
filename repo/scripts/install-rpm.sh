@@ -27,4 +27,8 @@ sudo rpm --import "$TMP_KEY"
 # Install RPM repo file
 echo "Configuring repository"
 sudo curl -fsSL "$RPM_REPO_URL" -o /etc/yum.repos.d/beacn-on-linux.repo
-echo "RPM repository added. You can now install packages with dnf/yum."
+
+echo "Installing Beacn Utility"
+sudo dnf install beacn-utility || sudo yum install beacn-utility
+
+echo "Installation Complete"
