@@ -23,13 +23,13 @@ jobs:
           mkdir -p artifacts/deb artifacts/rpm artifacts/flatpak
           
           TAG=$(gh release view --repo frostycoolslug/beacn-utility --json tagName -q .tagName)
-          TAG=${TAG#v}
           
           echo "Latest release: $TAG"
           gh release download "$TAG" --repo frostycoolslug/beacn-utility --pattern "*.deb" --dir artifacts/deb
           gh release download "$TAG" --repo frostycoolslug/beacn-utility --pattern "*.rpm" --dir artifacts/rpm
           gh release download "$TAG" --repo frostycoolslug/beacn-utility --pattern "*.flatpak" --dir artifacts/flatpak
 
+          echo VERSION="${TAG#v}" >> $GITHUB_ENV
       - name: Install dependencies
         run: |
           sudo add-apt-repository -y ppa:flatpak/stable
@@ -101,6 +101,8 @@ jobs:
 
       - name: Build Flatpak repo
         run: |
+          echo "USING VERSION: $VERSION"
+          
           mkdir -p repo/flatpak
           ostree init --mode=archive --repo=repo/flatpak
           
