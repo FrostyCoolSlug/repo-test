@@ -21,7 +21,10 @@ jobs:
 
         run: |
           mkdir -p artifacts/deb artifacts/rpm artifacts/flatpak
+          
           TAG=$(gh release view --repo frostycoolslug/beacn-utility --json tagName -q .tagName)
+          TAG=${TAG#v}
+          
           echo "Latest release: $TAG"
           gh release download "$TAG" --repo frostycoolslug/beacn-utility --pattern "*.deb" --dir artifacts/deb
           gh release download "$TAG" --repo frostycoolslug/beacn-utility --pattern "*.rpm" --dir artifacts/rpm
