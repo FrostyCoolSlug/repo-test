@@ -29,6 +29,6 @@ echo "Configuring repository"
 sudo curl -fsSL "$RPM_REPO_URL" -o /etc/yum.repos.d/beacn-on-linux.repo
 
 echo "Installing Beacn Utility"
-sudo dnf install beacn-utility || sudo yum install beacn-utility
+sudo dnf -y install beacn-utility || sudo yum -y install beacn-utility
 
 echo "Installation Complete"
