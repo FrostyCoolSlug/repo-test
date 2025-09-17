@@ -7,6 +7,6 @@ REPOSITORY="repo-test"
 FLATPAK_REF="https://${USER}.github.io/${REPOSITORY}/flatpak/beacn-utility.flatpakref"
 
 echo "Installing Beacn Utility via Flatpak"
-flatpak install ${FLATPAK_REF}
+flatpak install ${FLATPAK_REF} < /dev/tty
 
 echo "Installation Complete"

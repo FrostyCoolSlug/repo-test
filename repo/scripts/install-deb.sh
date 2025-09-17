@@ -21,6 +21,6 @@ sudo curl -fsSL "$APT_REPO_LIST_URL" -o /etc/apt/sources.list.d/beacn-on-linux.l
 sudo apt-get update
 
 echo "Installing Beacn Utility"
-sudo apt-get install beacn-utility
+sudo apt-get install -y beacn-utility
 
 echo "Installation Complete"
