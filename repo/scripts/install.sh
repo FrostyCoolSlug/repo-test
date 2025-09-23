@@ -93,15 +93,20 @@ run_installer() {
     echo "URL: $url"
     echo ""
     echo "Options:"
-    echo "  v) View script before running"
     echo "  y) Run the installer now"
     echo "  n) Cancel installation"
-    read -rp "Choose [v/y/n]: " confirm
+    echo "  v) View script before running"
+    read -rp "Choose [y/N/v]: " confirm
 
     case "$confirm" in
         v|V)
-            ${PAGER:-less} "$tmpfile"
-            echo ""
+            if command -v "${PAGER:-less}" >/dev/null 2>&1; then
+                ${PAGER:-less} "$tmpfile"
+            elif command -v more >/dev/null 2>&1; then
+                more "$tmpfile"
+            else
+                cat "$tmpfile"
+            fi
             read -rp "Run the installer now? [y/N]: " run_after_view
             if [[ "$run_after_view" =~ ^[Yy]$ ]]; then
                 bash "$tmpfile"
