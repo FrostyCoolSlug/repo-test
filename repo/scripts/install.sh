@@ -21,7 +21,7 @@ if [ "${_PIPED_REEXEC:-}" != "1" ] && [ ! -t 0 ]; then
         echo "Failed to re-exec installer." >&2
         exit 1
     else
-        echo "Error: no usable TTY for interaction. Re-run the script in a terminal or use a non-interactive mode." >&2
+        echo "Error: no usable TTY for interaction. Re-run the script in a terminal." >&2
         exit 1
     fi
 fi
