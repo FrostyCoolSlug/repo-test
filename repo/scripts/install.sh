@@ -3,7 +3,10 @@
 # Ensure we have a usable TTY even if run via `curl | bash`
 if [ ! -t 0 ]; then
     if [ -t 1 ] && [ -r /dev/tty ]; then
-        exec bash "$0" "$@" < /dev/tty
+        TEMP_FILE=$(mktemp)
+        cat >"$TEMP_FILE"
+        chmod +x "$TEMP_FILE"
+        exec bash "$TEMP_FILE" "$@" < /dev/tty
     else
         echo "Error: No usable TTY available for interaction."
         exit 1
@@ -91,16 +94,16 @@ run_installer() {
     url="$1"
     name="$2"
 
-    tmpfile="$(mktemp "/tmp/${name}.XXXXXX.sh")"
+    TEMP_FILE="$(mktemp "/tmp/${name}.XXXXXX.sh")"
 
     echo "Downloading installer for $name..."
-    if ! curl -fsSL -o "$tmpfile" "$url"; then
+    if ! curl -fsSL -o "$TEMP_FILE" "$url"; then
         echo "Failed to download installer script."
         exit 1
     fi
 
     echo ""
-    echo "Installer script for $name downloaded to: $tmpfile"
+    echo "Installer script for $name downloaded to: $TEMP_FILE"
     echo "URL: $url"
     echo ""
     echo "Options:"
@@ -112,22 +115,22 @@ run_installer() {
     case "$confirm" in
         v|V)
             if command -v "${PAGER:-less}" >/dev/null 2>&1; then
-                ${PAGER:-less} "$tmpfile"
+                ${PAGER:-less} "$TEMP_FILE"
             elif command -v more >/dev/null 2>&1; then
-                more "$tmpfile"
+                more "$TEMP_FILE"
             else
-                cat "$tmpfile"
+                cat "$TEMP_FILE"
             fi
             read -rp "Run the installer now? [y/N]: " run_after_view
             if [[ "$run_after_view" =~ ^[Yy]$ ]]; then
-                bash "$tmpfile"
+                bash "$TEMP_FILE"
             else
                 echo "Installation cancelled by user."
                 exit 0
             fi
             ;;
         y|Y)
-            bash "$tmpfile"
+            bash "$TEMP_FILE"
             ;;
         *)
             echo "Installation cancelled by user."
