@@ -14,6 +14,7 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       version: ${{ steps.store_version.outputs.version }}
+      release: ${{ steps.store_version.outputs.release }}
     env:
       GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     steps:
@@ -23,6 +24,7 @@ jobs:
           TAG=$(gh release view --repo frostycoolslug/beacn-utility --json tagName -q .tagName)
           echo "Latest release: $TAG"
           echo "version=${TAG#v}" >> $GITHUB_OUTPUT
+          echo "release=$TAG" >> $GITHUB_OUTPUT
 
   build_package_repos:
     runs-on: ubuntu-latest
@@ -38,9 +40,9 @@ jobs:
         run: |
           mkdir -p artifacts/deb artifacts/rpm artifacts/flatpak
           
-          echo "Latest release: ${{ needs.get_version.outputs.version }}"
-          gh release download "${{ needs.get_version.outputs.version }}" --repo frostycoolslug/beacn-utility --pattern "*.deb" --dir artifacts/deb
-          gh release download "${{ needs.get_version.outputs.version }}" --repo frostycoolslug/beacn-utility --pattern "*.rpm" --dir artifacts/rpm
+          echo "Latest release: ${{ needs.get_version.outputs.release }}"
+          gh release download "${{ needs.get_version.outputs.release }}" --repo frostycoolslug/beacn-utility --pattern "*.deb" --dir artifacts/deb
+          gh release download "${{ needs.get_version.outputs.release }}" --repo frostycoolslug/beacn-utility --pattern "*.rpm" --dir artifacts/rpm
 
       - name: Install dependencies
         run: |
