@@ -1,26 +1,23 @@
 #!/usr/bin/env bash
 
-# Ensure we have a usable TTY even if run via `curl | bash`
+# If we don't have a TTY, dump and rerun this script with /dev/tty as stdin.
 if [ "${_PIPED_REEXEC:-}" != "1" ] && [ ! -t 0 ]; then
-    # We have no stdin TTY. Make sure stdout is a TTY and /dev/tty exists.
     if [ -t 1 ] && [ -r /dev/tty ] && [ -w /dev/tty ]; then
-        tmpfile="$(mktemp)" || { echo "Failed to create temp file"; exit 1; }
-        # Read the rest of stdin (the piped script) into the temp file.
-        cat >"$tmpfile" || { echo "Failed to save piped script"; exit 1; }
-        chmod +x "$tmpfile"
+        TEMP_FILE="$(mktemp)" || { echo "Failed to create temp file"; exit 1; }
+        cat >"$TEMP_FILE" || { echo "Failed to save piped script"; exit 1; }
+        chmod +x "$TEMP_FILE"
 
-        # Prevent a repeated re-exec loop in the child.
         export _PIPED_REEXEC=1
 
         # Use the same bash executable if available, otherwise use 'bash' from PATH.
         if [ -n "${BASH:-}" ]; then
-            exec "$BASH" "$tmpfile" "$@" < /dev/tty
+            exec "$BASH" "$TEMP_FILE" "$@" < /dev/tty
         else
-            exec bash "$tmpfile" "$@" < /dev/tty
+            exec bash "$TEMP_FILE" "$@" < /dev/tty
         fi
 
         # If exec fails for some reason, clean up and exit.
-        rm -f "$tmpfile"
+        rm -f "$TEMP_FILE"
         echo "Failed to re-exec installer." >&2
         exit 1
     else
