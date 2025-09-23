@@ -48,11 +48,6 @@ if command -v flatpak >/dev/null 2>&1; then
     available+=("flatpak")
 fi
 
-if [ ${#available[@]} -eq 0 ]; then
-    echo "No supported package managers found (apt, dnf/yum/zypper, flatpak)."
-    exit 1
-fi
-
 # If we're immutable, RPM isn't valid, remove it from the list
 if $is_immutable; then
     filtered=()
@@ -64,9 +59,8 @@ if $is_immutable; then
     available=("${filtered[@]}")
 fi
 
-# Did we find anything?
 if [ ${#available[@]} -eq 0 ]; then
-    echo "No usable package managers found."
+    echo "No supported package managers found (apt, dnf/yum/zypper, flatpak, AUR)."
     exit 1
 fi
 
