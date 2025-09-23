@@ -66,7 +66,7 @@ fi
 
 # Did we find anything?
 if [ ${#available[@]} -eq 0 ]; then
-    echo "No usable package managers found (system appears to be immutable)."
+    echo "No usable package managers found."
     exit 1
 fi
 
