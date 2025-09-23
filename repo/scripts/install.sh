@@ -14,7 +14,7 @@ AUR_PACKAGE="beacn-utility"  # replace with actual AUR package name
 # We need to check which package managers are available, but first we need to confirm whether this is an
 # immutable system, where RPM-based installs won't work.
 is_immutable=false
-if [ -f /usr/bin/rpm-ostree ] || [ -d /ostree ] || grep -qi "ostree" /proc/cmdline 2>/dev/null; then
+if [ -f /run/ostree-booted ]; then
     is_immutable=true
 fi
 
