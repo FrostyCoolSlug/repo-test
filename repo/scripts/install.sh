@@ -1,14 +1,30 @@
 #!/usr/bin/env bash
 
 # Ensure we have a usable TTY even if run via `curl | bash`
-if [ ! -t 0 ]; then
-    if [ -t 1 ] && [ -r /dev/tty ]; then
-        TEMP_FILE=$(mktemp)
-        cat >"$TEMP_FILE"
-        chmod +x "$TEMP_FILE"
-        exec bash "$TEMP_FILE" "$@" < /dev/tty
+if [ "${_PIPED_REEXEC:-}" != "1" ] && [ ! -t 0 ]; then
+    # We have no stdin TTY. Make sure stdout is a TTY and /dev/tty exists.
+    if [ -t 1 ] && [ -r /dev/tty ] && [ -w /dev/tty ]; then
+        tmpfile="$(mktemp)" || { echo "Failed to create temp file"; exit 1; }
+        # Read the rest of stdin (the piped script) into the temp file.
+        cat >"$tmpfile" || { echo "Failed to save piped script"; exit 1; }
+        chmod +x "$tmpfile"
+
+        # Prevent a repeated re-exec loop in the child.
+        export _PIPED_REEXEC=1
+
+        # Use the same bash executable if available, otherwise use 'bash' from PATH.
+        if [ -n "${BASH:-}" ]; then
+            exec "$BASH" "$tmpfile" "$@" < /dev/tty
+        else
+            exec bash "$tmpfile" "$@" < /dev/tty
+        fi
+
+        # If exec fails for some reason, clean up and exit.
+        rm -f "$tmpfile"
+        echo "Failed to re-exec installer." >&2
+        exit 1
     else
-        echo "Error: No usable TTY available for interaction."
+        echo "Error: no usable TTY for interaction. Re-run the script in a terminal or use a non-interactive mode." >&2
         exit 1
     fi
 fi
