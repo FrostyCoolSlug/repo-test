@@ -1,4 +1,15 @@
 #!/usr/bin/env bash
+
+# Ensure we have a usable TTY even if run via `curl | bash`
+if [ ! -t 0 ]; then
+    if [ -t 1 ] && [ -r /dev/tty ]; then
+        exec bash "$0" "$@" < /dev/tty
+    else
+        echo "Error: No usable TTY available for interaction."
+        exit 1
+    fi
+fi
+
 set -euo pipefail
 
 # These are just helpers, so that forks can easily change settings
