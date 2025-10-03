@@ -119,8 +119,14 @@ run_installer() {
     echo "Installer script for $name downloaded to: $TEMP_FILE"
     echo "URL: $url"
     echo ""
-    read -rp "Press Enter to continue install..."
-    bash "$TEMP_FILE"
+    read -rp "Press Enter to continue (or any other key to cancel)..."
+
+    if [[ -z "$REPLY" ]]; then
+        bash "$TEMP_FILE"
+    else
+        echo "Installation cancelled by user."
+        exit 0
+    fi
 }
 
 # Select install method
