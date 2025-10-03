@@ -119,37 +119,8 @@ run_installer() {
     echo "Installer script for $name downloaded to: $TEMP_FILE"
     echo "URL: $url"
     echo ""
-    echo "Options:"
-    echo "  y) Run the installer now"
-    echo "  n) Cancel installation"
-    echo "  v) View script before running"
-    read -rp "Choose [y/N/v]: " confirm
-
-    case "$confirm" in
-        v|V)
-            if command -v "${PAGER:-less}" >/dev/null 2>&1; then
-                ${PAGER:-less} "$TEMP_FILE"
-            elif command -v more >/dev/null 2>&1; then
-                more "$TEMP_FILE"
-            else
-                cat "$TEMP_FILE"
-            fi
-            read -rp "Run the installer now? [y/N]: " run_after_view
-            if [[ "$run_after_view" =~ ^[Yy]$ ]]; then
-                bash "$TEMP_FILE"
-            else
-                echo "Installation cancelled by user."
-                exit 0
-            fi
-            ;;
-        y|Y)
-            bash "$TEMP_FILE"
-            ;;
-        *)
-            echo "Installation cancelled by user."
-            exit 0
-            ;;
-    esac
+    read -rp "Press Enter to continue install..."
+    bash "$TEMP_FILE"
 }
 
 # Select install method
